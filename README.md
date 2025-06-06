@@ -91,7 +91,7 @@ Os principais resultados desta análise incluem:
 
 ## Autor
 
-Lucas
+Lucas Batista Pereira
 
 ## Licença
 
