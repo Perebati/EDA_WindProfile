@@ -345,19 +345,39 @@ def windspeed_profile_law(height, reference_height, reference_speed, alpha=0.143
 
 def calculate_wind_shear_exponent(heights, speeds):
     """
-    Calcula o expoente de cisalhamento do vento a partir das velocidades e alturas.
+    Calcula o expoente de cisalhamento do vento usando regressão linear no espaço log-log.
     
-    Args:
-        heights: Lista de alturas
-        speeds: Lista de velocidades correspondentes
+    Parameters:
+    -----------
+    heights : list or array
+        Alturas de medição
+    speeds : list or array
+        Velocidades do vento correspondentes às alturas
         
     Returns:
+    --------
+    alpha : float
         Expoente de cisalhamento do vento
+    r_squared : float
+        Coeficiente de determinação da regressão
     """
-    log_heights = np.log(heights)
-    log_speeds = np.log(speeds)
+    # Verificar valores negativos ou zero que causariam erros no logaritmo
+    valid_indices = []
+    for i, (height, speed) in enumerate(zip(heights, speeds)):
+        if height > 0 and speed > 0:
+            valid_indices.append(i)
     
+    if len(valid_indices) < 2:
+        raise ValueError("Número insuficiente de pontos válidos para calcular o cisalhamento")
+    
+    # Usar apenas valores válidos
+    valid_heights = np.array([heights[i] for i in valid_indices])
+    valid_speeds = np.array([speeds[i] for i in valid_indices])
+    
+    log_heights = np.log(valid_heights)
+    log_speeds = np.log(valid_speeds)
+
     # Regressão linear no espaço log-log
-    slope, _, r_value, _, _ = stats.linregress(log_heights, log_speeds)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(log_heights, log_speeds)
     
-    return slope, r_value**2  # Retorna o expoente e o R²
+    return slope, r_value**2

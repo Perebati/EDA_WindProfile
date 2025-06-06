@@ -12,3 +12,4 @@ plotly==5.15.0
 statsmodels==0.14.0
 ipywidgets==8.0.6
 windrose==1.6.8
+xgboost==3.0.2
